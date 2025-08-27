@@ -8,9 +8,8 @@
 4. [Technical Architecture & Stack](#technical-architecture--stack)
 5. [Database Schema & API Endpoints](#database-schema--api-endpoints)
 6. [Development Guidelines & Rules](#development-guidelines--rules)
-7. [Implementation Timeline & Roadmap](#implementation-timeline--roadmap)
-8. [Key Decisions & Lessons Learned](#key-decisions--lessons-learned)
-9. [Next Steps](#next-steps)
+7. [Key Decisions & Lessons Learned](#key-decisions--lessons-learned)
+8. [Next Steps](#next-steps)
 
 ---
 
@@ -70,27 +69,115 @@ A beginner-friendly financial decision-making web application that helps users f
 
 ## Technical Architecture & Stack
 
-**Frontend:**
+### Frontend Architecture (React 18.2.0 + Vite)
 
-- React 18.2.0, React Router DOM, Vite, Tailwind CSS
+**Core Framework & Build Tools:**
 
-**Backend:**
+- **React 18.2.0** with modern hooks (useState, useEffect, useContext, useReducer)
+- **Vite** for ultra-fast development and optimized production builds
+- **React Router DOM v6** for client-side routing with protected routes
+- **Tailwind CSS** for rapid UI development with utility-first approach
 
-- Node.js, Express 4.18.2, PostgreSQL, Knex.js, bcrypt, express-session
+**Component Architecture:**
 
-**Database:**
+- **Atomic Design Pattern:** Atoms → Molecules → Organisms → Templates → Pages
+- **Smart/Dumb Component Separation:** Container components handle logic, presentational components handle UI
+- **Custom Hooks:** Extract reusable logic (useAuth, useCreditCards, useRecommendations)
+- **Context API:** Global state management for user authentication and preferences
 
-- PostgreSQL with Knex.js ORM
+**State Management Strategy:**
 
-**Authentication:**
+- **React Context** for global auth state and user preferences
+- **Local State** for component-specific data (forms, UI toggles)
+- **Custom Hooks** for API calls and data fetching with loading/error states
+- **Optimistic Updates** for immediate UI feedback during API operations
 
-- Cookie-based sessions, bcrypt password hashing
+**Performance Optimizations:**
 
-**Project Structure:**
+- **React.memo()** for expensive components
+- **useMemo/useCallback** for expensive calculations and event handlers
+- **Code Splitting** with React.lazy() for route-based chunks
+- **Virtual Scrolling** for large credit card lists (if needed)
 
-- Monorepo: `/frontend` (React), `/server` (Express)
-- Organized by components, pages, contexts, adapters, utils (frontend)
-- Controllers, middleware, models, db (backend)
+**UI/UX Framework:**
+
+- **Tailwind CSS** with custom design system
+- **Responsive Design** with mobile-first approach
+- **Accessibility** (ARIA labels, keyboard navigation, screen reader support)
+- **Dark/Light Mode** toggle capability
+- **Loading States** and skeleton screens for better perceived performance
+
+### Backend Architecture (Node.js + Express + PostgreSQL)
+
+**Server Framework & Runtime:**
+
+- **Node.js** with latest LTS version for stability and performance
+- **Express 4.18.2** with middleware-based architecture
+- **PM2** or similar process manager for production deployment
+- **CORS** configuration for frontend integration
+
+**Database Layer:**
+
+- **PostgreSQL** with connection pooling for concurrent requests
+- **Knex.js** as query builder with migrations and seeding
+- **Database Transactions** for data integrity (user registration, goal updates)
+- **Connection Pooling** with configurable pool size and timeout
+- **Database Indexing** on frequently queried columns (user_id, card_type, rewards_type)
+
+**Authentication & Security:**
+
+- **bcrypt** for password hashing with configurable salt rounds
+- **express-session** with secure cookie configuration
+- **CSRF Protection** for state-changing operations
+- **Rate Limiting** with express-rate-limit for API endpoints
+- **Input Validation** with Joi or express-validator
+- **SQL Injection Prevention** through parameterized queries with Knex.js
+
+**API Architecture:**
+
+- **RESTful Design** with consistent endpoint patterns
+- **Middleware Chain** for authentication, validation, and error handling
+- **Response Standardization** with consistent success/error formats
+- **API Versioning** strategy for future compatibility
+- **Request/Response Logging** for debugging and monitoring
+
+**Performance & Scalability:**
+
+- **Database Query Optimization** with proper indexing and query analysis
+- **Response Caching** for static credit card data
+- **Compression** with express-compression for large responses
+- **Request Validation** early in middleware chain to fail fast
+- **Async/Await** pattern for non-blocking operations
+
+**Error Handling & Monitoring:**
+
+- **Centralized Error Handler** with proper HTTP status codes
+- **Request Logging** with unique request IDs for tracing
+- **Performance Monitoring** with response time tracking
+- **Graceful Degradation** for non-critical service failures
+
+### Development & Deployment Infrastructure
+
+**Development Environment:**
+
+- **Hot Reload** with Vite for frontend, nodemon for backend
+- **Environment Configuration** with .env files for different stages
+- **Docker** containers for consistent development environment
+- **Git Hooks** with husky for pre-commit linting and testing
+
+**Testing Strategy:**
+
+- **Frontend:** Jest + React Testing Library for component testing
+- **Backend:** Jest + Supertest for API endpoint testing
+- **Integration Tests:** End-to-end user workflows
+- **Performance Tests:** Load testing for recommendation algorithms
+
+**Deployment Pipeline:**
+
+- **CI/CD** with GitHub Actions for automated testing and deployment
+- **Environment Management** with staging and production configurations
+- **Database Migrations** with rollback capability
+- **Health Checks** for monitoring application status
 
 ---
 
@@ -149,69 +236,6 @@ A beginner-friendly financial decision-making web application that helps users f
 
 ---
 
-## Implementation Timeline & Roadmap
-
-**Note:** You have 15 days to complete the project. Project work will be focused on Tuesday–Thursday each week, as Friday–Monday are your work days and less available for capstone work. The plan below is optimized for your available days and prioritizes MVP features, polish, and support for the "Travelers" persona.
-
-### Accelerated 15-Day Timeline
-
-#### **Days 1–3 (First Tue–Thu): Project Setup & Authentication**
-
-- Set up project environment (repo, dependencies, environment variables)
-- Ensure database is running and migrations are ready
-- Review and test existing authentication (register, login, session)
-- Set up basic frontend routing and navigation
-
-#### **Days 4–6 (Second Tue–Thu): Core Features – User Goals & Credit Card Catalog**
-
-- Implement user goal setting (frontend form, backend endpoints, DB)
-- Create credit card browsing/search (frontend UI, backend endpoints, DB)
-- Seed database with sample credit card data (including travel cards)
-- Display card list with search/filter on frontend
-
-#### **Day 7–8 (Third Tue–Wed): Card Details & Recommendations**
-
-- Implement card detail page (frontend and backend)
-- Build basic recommendation logic (match user goals to cards, including travel rewards)
-- Display recommendations on dashboard or dedicated page
-
-#### **Day 9 (Third Thu): Polish, Testing, and Documentation**
-
-- Polish UI/UX (focus on clarity, accessibility, and responsiveness)
-- Write and run tests for critical paths (auth, goals, recommendations)
-- Update documentation (README, API docs, usage instructions)
-- Buffer for bug fixes and final review
-
-#### **Days 10–12+ (Final Tue–Thu, if time allows): Nice-to-Haves & Stretch Goals**
-
-- Add watchlist/favorites feature
-- Implement card comparison
-- Add educational content/tooltips
-- Further refine recommendations for travelers (e.g., travel perks, no foreign fees)
-
----
-
-### Roadmap Table
-
-| Day(s)           | Focus Areas                                      |
-| ---------------- | ------------------------------------------------ |
-| 1–3 (Tue–Thu)    | Setup, Auth, Routing                             |
-| 4–6 (Tue–Thu)    | User Goals, Card Catalog, Search/Filter, Seeding |
-| 7–8 (Tue–Wed)    | Card Details, Recommendations                    |
-| 9 (Thu)          | Polish, Testing, Docs, Bug Fixes                 |
-| 10–12+ (Tue–Thu) | Nice-to-Haves, Stretch Goals                     |
-
----
-
-**Priorities:**
-
-- Focus on MVP: registration/login, user goals, card browsing, card details, recommendations.
-- Ensure at least one travel card is included in your seed data and recommendation logic.
-- Use the final days for polish, testing, and documentation—don’t skip this!
-- If you finish early, tackle nice-to-haves or further optimize for the “Travelers” persona.
-
----
-
 ## Key Decisions & Lessons Learned
 
 - Built on existing React/Express auth template for speed and reliability
@@ -224,41 +248,59 @@ A beginner-friendly financial decision-making web application that helps users f
 
 ## Next Steps
 
-1. Team review and feedback on this master document
-2. Set up development and testing tools (ESLint, testing framework, etc.)
-3. Complete environment setup and database migrations
-4. Begin implementation of core API endpoints and frontend components
-5. Regularly review and update documentation as project evolves
+1. **Immediate Setup (Day 1):**
 
-### Days 1–3 (First Tue–Thu): Project Setup & Authentication Checklist
+   - Clone repo and install dependencies
+   - Configure environment variables and database connection
+   - Run migrations and seed initial data
+   - Test authentication endpoints
 
-- [ ] **Project Environment**
+2. **Core Development (Days 2-3):**
 
-  - [ ] Clone repo and set up local environment
-  - [ ] Install all dependencies (frontend & backend)
-  - [ ] Configure environment variables (database, session secret, etc.)
-  - [ ] Ensure `.env` files are git-ignored and secure
+   - Implement user goal setting (frontend form + backend API)
+   - Create credit card browsing interface with search/filter
+   - Build card detail pages with comprehensive information
+   - Develop recommendation algorithm and display
 
-- [ ] **Database**
+3. **Integration & Polish (Days 4-5):**
 
-  - [ ] Start PostgreSQL locally or connect to cloud DB
-  - [ ] Run all migrations to create tables
-  - [ ] (Optional) Seed database with initial user and card data
+   - Connect frontend and backend with proper error handling
+   - Implement responsive design and accessibility features
+   - Add loading states and user feedback
+   - Test complete user workflows
 
-- [ ] **Authentication**
+4. **Deployment & Documentation (Final Day):**
+   - Deploy to production environment
+   - Update README with setup and usage instructions
+   - Create API documentation
+   - Record demo video for submission
 
-  - [ ] Test user registration (POST `/api/auth/register`)
-  - [ ] Test user login (POST `/api/auth/login`)
-  - [ ] Test session persistence (GET `/api/auth/me`)
-  - [ ] Test logout (DELETE `/api/auth/logout`)
-  - [ ] Confirm password hashing and session cookies are working
+### Rapid Development Checklist
 
-- [ ] **Frontend Routing & Navigation**
+- [ ] **Environment Setup**
 
-  - [ ] Set up React Router with routes for Home, Login, Sign Up, Users, User Profile, 404
-  - [ ] Implement navigation bar with auth state (show login/signup or user info)
-  - [ ] Protect user routes (redirect if not authenticated)
+  - [ ] Dependencies installed and working
+  - [ ] Database running with migrations applied
+  - [ ] Environment variables configured
+  - [ ] Frontend and backend can communicate
 
-- [ ] **Documentation**
-  - [ ] Update README with setup instructions if needed
-  - [ ] Document any issues or fixes encountered
+- [ ] **Core Features**
+
+  - [ ] User authentication (register, login, logout)
+  - [ ] User goal setting and management
+  - [ ] Credit card browsing and search
+  - [ ] Card detail pages
+  - [ ] Recommendation system
+
+- [ ] **Quality Assurance**
+
+  - [ ] Responsive design on mobile and desktop
+  - [ ] Error handling for all user interactions
+  - [ ] Loading states and user feedback
+  - [ ] Accessibility features implemented
+
+- [ ] **Deployment**
+  - [ ] Production build created
+  - [ ] Application deployed and accessible
+  - [ ] Documentation updated
+  - [ ] Demo ready for submission
